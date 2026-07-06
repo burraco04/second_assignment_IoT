@@ -15,11 +15,16 @@ public:
 
   Button* getButton();
   Led*  getLed();
+  Led*  getL1();
+  Led*  getL2();
+  Led*  getL3();
   ServoMotor* getMotor();
 
 private:
   Button* pButton;
-  Led* pLed;
+  Led* pLed1;
+  Led* pLed2;
+  Led* pLed3;
   ServoMotor* pMotor;
   
 };

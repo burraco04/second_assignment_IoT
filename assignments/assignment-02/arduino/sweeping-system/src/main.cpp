@@ -5,8 +5,8 @@
 #include "kernel/MsgService.h"
 #include "model/HWPlatform.h"
 #include "tasks/TestHWTask.h"
-#include "tasks/SweepingTask.h"
-#include "tasks/BlinkingTask.h"
+#include "tasks/DroneTask.h"
+#include "tasks/LEDsTask.h"
 
 // #define __TESTING_HW__
 
@@ -19,7 +19,7 @@ void setup() {
   MsgService.init();
   sched.init(50);
 
-  Logger.log(":::::: Sweeping System ::::::");
+  Logger.log(":::::: Smart Drone Hangar ::::::");
   
   pHWPlatform = new HWPlatform();
   pHWPlatform->init();
@@ -27,14 +27,14 @@ void setup() {
 #ifndef __TESTING_HW__
   pContext = new Context();
 
-  Task* pSweepingTask = new SweepingTask(pHWPlatform->getButton(), pHWPlatform->getMotor(), pContext);
-  pSweepingTask->init(50);
+  Task* pDroneTask = new DroneTask(pContext);
+  pDroneTask->init(100);
 
-  Task* pBlinkingTask = new BlinkingTask(pHWPlatform->getLed(), pContext);
-  pBlinkingTask->init(100);
+  Task* pLEDsTask = new LEDsTask(pHWPlatform->getL1(), pHWPlatform->getL2(), pHWPlatform->getL3(), pContext);
+  pLEDsTask->init(500);
 
-  sched.addTask(pSweepingTask);
-  sched.addTask(pBlinkingTask);
+  sched.addTask(pDroneTask);
+  sched.addTask(pLEDsTask);
 #endif
 
 #ifdef __TESTING_HW__

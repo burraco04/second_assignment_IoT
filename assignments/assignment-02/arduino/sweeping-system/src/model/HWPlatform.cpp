@@ -12,7 +12,9 @@ void wakeUp(){}
 
 HWPlatform::HWPlatform(){
   pButton = new ButtonImpl(BT_PIN);
-  pLed = new Led(LED_PIN);
+  pLed1 = new Led(L1_PIN);
+  pLed2 = new Led(L2_PIN);
+  pLed3 = new Led(L3_PIN);
   pMotor = new ServoMotorImpl(MOTOR_PIN);
 }
 
@@ -26,7 +28,19 @@ Button* HWPlatform::getButton(){
 
 
 Led*  HWPlatform::getLed(){
-  return this->pLed;
+  return this->pLed1;
+}
+
+Led* HWPlatform::getL1(){
+  return this->pLed1;
+}
+
+Led* HWPlatform::getL2(){
+  return this->pLed2;
+}
+
+Led* HWPlatform::getL3(){
+  return this->pLed3;
 }
 
 ServoMotor* HWPlatform::getMotor(){
@@ -35,7 +49,9 @@ ServoMotor* HWPlatform::getMotor(){
 
 void HWPlatform::test(){
   bool btPressed = pButton->isPressed();
-  pLed->switchOn();
+  pLed1->switchOn();
+  pLed2->switchOn();
+  pLed3->switchOn();
   pMotor->on();
   pMotor->setPosition(90);
   Logger.log("Button: " + String(btPressed ? "pressed" : " not pressed"));
@@ -43,6 +59,8 @@ void HWPlatform::test(){
   pMotor->setPosition(0);
   delay(1000);
   pMotor->off();
-  pLed->switchOff();
+  pLed1->switchOff();
+  pLed2->switchOff();
+  pLed3->switchOff();
 }
 

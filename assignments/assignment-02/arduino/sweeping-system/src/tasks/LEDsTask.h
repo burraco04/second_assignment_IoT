@@ -1,15 +1,15 @@
-#ifndef __BLINKING_TASK__
-#define __BLINKING_TASK__
+#ifndef __LEDS_TASK__
+#define __LEDS_TASK__
 
 #include "kernel/Task.h"
 #include "model/Context.h"
 #include "devices/Led.h"
 #include <Arduino.h>
 
-class BlinkingTask: public Task {
+class LEDsTask: public Task {
 
 public:
-  BlinkingTask(Led* pLed, Context* pContext); 
+  LEDsTask(Led* l1, Led* l2, Led* l3, Context* pContext); 
   void tick();
 
 private:  
@@ -19,11 +19,13 @@ private:
   
   bool checkAndSetJustEntered();
   
-  enum { IDLE, OFF, ON } state;
+  enum { T0, T1, T2} state;
   long stateTimestamp;
   bool justEntered;
 
-  Led* pLed;
+  Led* l1;
+  Led* l2;
+  Led* l3;
   Context* pContext;
 };
 
