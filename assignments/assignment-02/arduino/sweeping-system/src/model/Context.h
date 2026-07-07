@@ -53,14 +53,21 @@ public:
   bool isStopped();
   void reset();
 
+  void setDistance(float distance);
+  float getDistance();
+  void setDroneDetected(bool detected);
+  bool isDroneDetected();
+
 private:
 
   bool started; 
   bool stopped;
+  bool droneDetected;
   DroneState droneState;
   DroneState resumeState;
   HangarState hangarState;
   float temperature;
+  float distance;
 };
 
 #endif

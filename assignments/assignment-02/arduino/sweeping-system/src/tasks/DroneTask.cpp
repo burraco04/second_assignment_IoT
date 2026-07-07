@@ -98,6 +98,8 @@ void DroneTask::applyCommand(const String& command){
   } else if (cmd == "TAKEOFF" || cmd == "DRONE:TAKEOFF" || cmd == "TAKE_OFF"){
     if (pContext->isSuspended() || pContext->isPreAlarm() || pContext->isAlarm()){
       log(F("[DRONE] TAKEOFF_BLOCKED"));
+    } else if (!pContext->isResting()){
+      log(F("[DRONE] TAKEOFF_IGNORED"));
     } else {
       setState(APPLY_TAKING_OFF);
     }
@@ -106,6 +108,10 @@ void DroneTask::applyCommand(const String& command){
   } else if (cmd == "LAND" || cmd == "DRONE:LAND"){
     if (pContext->isSuspended() || pContext->isPreAlarm() || pContext->isAlarm()){
       log(F("[DRONE] LAND_BLOCKED"));
+    } else if (!pContext->isFlying()){
+      log(F("[DRONE] LAND_IGNORED"));
+    } else if (!pContext->isDroneDetected()){
+      log(F("[DRONE] LAND_WAITING_DPD"));
     } else {
       setState(APPLY_LANDING);
     }

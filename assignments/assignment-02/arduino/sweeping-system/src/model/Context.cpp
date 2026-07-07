@@ -3,10 +3,12 @@
 Context::Context(){
   started = false;
   stopped = false;
+  droneDetected = false;
   droneState = RESTING;
   resumeState = RESTING;
   hangarState = NORMAL;
   temperature = 0.0;
+  distance = 0.0;
 }
 
 bool Context::isStarted(){
@@ -30,10 +32,12 @@ void Context::setStopped(){
 void Context::reset(){
   started = false;
   stopped = false;
+  droneDetected = false;
   droneState = RESTING;
   resumeState = RESTING;
   hangarState = NORMAL;
   temperature = 0.0;
+  distance = 0.0;
 }
 
 void Context::setResting(){
@@ -134,3 +138,18 @@ float Context::getTemperature(){
   return temperature;
 }
 
+void Context::setDistance(float distance){
+  this->distance = distance;
+}
+
+float Context::getDistance(){
+  return distance;
+}
+
+void Context::setDroneDetected(bool detected){
+  droneDetected = detected;
+}
+
+bool Context::isDroneDetected(){
+  return droneDetected;
+}
