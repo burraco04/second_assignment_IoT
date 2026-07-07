@@ -12,6 +12,12 @@ public:
     SUSPENDED
   };
 
+  enum HangarState {
+    NORMAL,
+    PRE_ALARM,
+    ALARM
+  };
+
   Context();
 
   void setResting();
@@ -20,13 +26,25 @@ public:
   void setLanding();
   void setSuspended();
   void clearSuspended();
+  void setHangarNormal();
+  void setHangarPreAlarm();
+  void setHangarAlarm();
+  void setAlarm();
+  void clearAlarm();
 
   DroneState getDroneState();
+  HangarState getHangarState();
   bool isResting();
   bool isTakingOff();
   bool isFlying();
   bool isLanding();
   bool isSuspended();
+  bool isNormal();
+  bool isPreAlarm();
+  bool isAlarm();
+
+  void setTemperature(float temp);
+  float getTemperature();
 
   void setStarted();
   void setStopped();
@@ -41,6 +59,8 @@ private:
   bool stopped;
   DroneState droneState;
   DroneState resumeState;
+  HangarState hangarState;
+  float temperature;
 };
 
 #endif

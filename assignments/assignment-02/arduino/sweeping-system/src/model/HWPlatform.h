@@ -4,7 +4,10 @@
 #include "config.h"
 #include "devices/Button.h"
 #include "devices/Led.h"
+#include "devices/Pir.h"
+#include "devices/Sonar.h"
 #include "devices/ServoMotor.h"
+#include "devices/TempSensor.h"
 
 class HWPlatform {
 
@@ -19,6 +22,9 @@ public:
   Led*  getL2();
   Led*  getL3();
   ServoMotor* getMotor();
+  TempSensor* getTempSensor();
+  Pir* getPir();
+  Sonar* getSonar();
 
 private:
   Button* pButton;
@@ -26,6 +32,9 @@ private:
   Led* pLed2;
   Led* pLed3;
   ServoMotor* pMotor;
+  TempSensor* pTempSensor;
+  Pir* pPir;
+  Sonar* pSonar;
   
 };
 

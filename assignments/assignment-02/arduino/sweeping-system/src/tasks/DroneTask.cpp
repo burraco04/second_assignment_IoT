@@ -76,7 +76,9 @@ void DroneTask::tick(){
 
     case APPLY_NORMAL: {
       if (checkAndSetJustEntered()){
-        pContext->clearSuspended();
+        if (!pContext->isAlarm()){
+          pContext->clearSuspended();
+        }
         log(F("[DRONE] NORMAL"));
         MsgService.sendMsg(String(F("STATE:")) + stateToString(pContext->getDroneState()));
         setState(WAITING);
@@ -94,15 +96,39 @@ void DroneTask::applyCommand(const String& command){
   if (cmd == "REST" || cmd == "DRONE:REST"){
     setState(APPLY_RESTING);
   } else if (cmd == "TAKEOFF" || cmd == "DRONE:TAKEOFF" || cmd == "TAKE_OFF"){
-    setState(APPLY_TAKING_OFF);
+    if (pContext->isSuspended() || pContext->isPreAlarm() || pContext->isAlarm()){
+      log(F("[DRONE] TAKEOFF_BLOCKED"));
+    } else {
+      setState(APPLY_TAKING_OFF);
+    }
   } else if (cmd == "FLY" || cmd == "DRONE:FLY"){
     setState(APPLY_FLYING);
   } else if (cmd == "LAND" || cmd == "DRONE:LAND"){
-    setState(APPLY_LANDING);
+    if (pContext->isSuspended() || pContext->isPreAlarm() || pContext->isAlarm()){
+      log(F("[DRONE] LAND_BLOCKED"));
+    } else {
+      setState(APPLY_LANDING);
+    }
   } else if (cmd == "SUSPEND" || cmd == "SYSTEM:SUSPEND" || cmd == "ALARM"){
-    setState(APPLY_SUSPENDED);
+    if (cmd == "ALARM"){
+      pContext->setAlarm();
+      log(F("[DRONE] ALARM"));
+      MsgService.sendMsg(String(F("STATE:")) + stateToString(pContext->getDroneState()));
+    } else {
+      setState(APPLY_SUSPENDED);
+    }
   } else if (cmd == "NORMAL" || cmd == "SYSTEM:NORMAL" || cmd == "RESET"){
-    setState(APPLY_NORMAL);
+    if (cmd == "RESET"){
+      pContext->reset();
+      log(F("[DRONE] RESET"));
+      MsgService.sendMsg(String(F("STATE:")) + stateToString(pContext->getDroneState()));
+    } else {
+      if (pContext->isAlarm()){
+        log(F("[DRONE] NORMAL_BLOCKED"));
+      } else {
+        setState(APPLY_NORMAL);
+      }
+    }
   } else {
     log(String(F("[DRONE] IGNORED ")) + cmd);
   }

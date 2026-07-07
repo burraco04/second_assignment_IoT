@@ -5,6 +5,8 @@ Context::Context(){
   stopped = false;
   droneState = RESTING;
   resumeState = RESTING;
+  hangarState = NORMAL;
+  temperature = 0.0;
 }
 
 bool Context::isStarted(){
@@ -30,6 +32,8 @@ void Context::reset(){
   stopped = false;
   droneState = RESTING;
   resumeState = RESTING;
+  hangarState = NORMAL;
+  temperature = 0.0;
 }
 
 void Context::setResting(){
@@ -62,8 +66,32 @@ void Context::clearSuspended(){
   }
 }
 
+void Context::setHangarNormal(){
+  hangarState = NORMAL;
+}
+
+void Context::setHangarPreAlarm(){
+  hangarState = PRE_ALARM;
+}
+
+void Context::setHangarAlarm(){
+  hangarState = ALARM;
+}
+
+void Context::setAlarm(){
+  setHangarAlarm();
+}
+
+void Context::clearAlarm(){
+  hangarState = NORMAL;
+}
+
 Context::DroneState Context::getDroneState(){
   return droneState;
+}
+
+Context::HangarState Context::getHangarState(){
+  return hangarState;
 }
 
 bool Context::isResting(){
@@ -84,5 +112,25 @@ bool Context::isLanding(){
 
 bool Context::isSuspended(){
   return droneState == SUSPENDED;
+}
+
+bool Context::isNormal(){
+  return hangarState == NORMAL;
+}
+
+bool Context::isPreAlarm(){
+  return hangarState == PRE_ALARM;
+}
+
+bool Context::isAlarm(){
+  return hangarState == ALARM;
+}
+
+void Context::setTemperature(float temp){
+  temperature = temp;
+}
+
+float Context::getTemperature(){
+  return temperature;
 }
 

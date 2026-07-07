@@ -24,7 +24,7 @@ void LEDsTask::tick(){
         l3->switchOff();
       }
 
-      if (pContext->isSuspended()){
+      if (pContext->isSuspended() || pContext->isAlarm()){
         setState(T2);
       } else if (pContext->isTakingOff() || pContext->isLanding()){
         setState(T1);
@@ -46,7 +46,7 @@ void LEDsTask::tick(){
         }
       }
 
-      if (pContext->isSuspended()){
+      if (pContext->isSuspended() || pContext->isAlarm()){
         setState(T2);
       } else if (pContext->isResting() || pContext->isFlying()){
         setState(T0);
@@ -62,7 +62,7 @@ void LEDsTask::tick(){
         l3->switchOn();
       }
 
-      if (!pContext->isSuspended()){
+      if (!(pContext->isSuspended() || pContext->isAlarm())){
         setState(T0);
       }
       break;

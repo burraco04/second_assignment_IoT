@@ -4,8 +4,11 @@
 #include "kernel/MsgService.h"
 #include "config.h"
 #include "devices/Led.h"
+#include "devices/Pir.h"
+#include "devices/Sonar.h"
 #include "devices/LightSensorImpl.h"
 #include "devices/ServoMotorImpl.h"
+#include "devices/TempSensorTMP36.h"
 #include "kernel/Logger.h"
 
 void wakeUp(){}
@@ -16,6 +19,9 @@ HWPlatform::HWPlatform(){
   pLed2 = new Led(L2_PIN);
   pLed3 = new Led(L3_PIN);
   pMotor = new ServoMotorImpl(MOTOR_PIN);
+  pTempSensor = new TempSensorTMP36(TEMP_PIN);
+  pPir = new Pir(PIR_PIN);
+  pSonar = new Sonar(SONAR_ECHO_PIN, SONAR_TRIG_PIN, 30000);
 }
 
 
@@ -45,6 +51,18 @@ Led* HWPlatform::getL3(){
 
 ServoMotor* HWPlatform::getMotor(){
   return this->pMotor;
+}
+
+TempSensor* HWPlatform::getTempSensor(){
+  return this->pTempSensor;
+}
+
+Pir* HWPlatform::getPir(){
+  return this->pPir;
+}
+
+Sonar* HWPlatform::getSonar(){
+  return this->pSonar;
 }
 
 void HWPlatform::test(){

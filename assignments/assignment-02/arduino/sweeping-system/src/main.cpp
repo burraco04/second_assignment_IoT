@@ -3,10 +3,13 @@
 #include "kernel/Scheduler.h"
 #include "kernel/Logger.h"
 #include "kernel/MsgService.h"
+#include "model/Context.h"
 #include "model/HWPlatform.h"
 #include "tasks/TestHWTask.h"
 #include "tasks/DroneTask.h"
+#include "tasks/HangarTask.h"
 #include "tasks/LEDsTask.h"
+#include "tasks/TempTask.h"
 
 // #define __TESTING_HW__
 
@@ -30,10 +33,18 @@ void setup() {
   Task* pDroneTask = new DroneTask(pContext);
   pDroneTask->init(100);
 
+  Task* pTempTask = new TempTask(pHWPlatform->getTempSensor(), pContext);
+  pTempTask->init(500);
+
+  Task* pHangarTask = new HangarTask(pContext);
+  pHangarTask->init(500);
+
   Task* pLEDsTask = new LEDsTask(pHWPlatform->getL1(), pHWPlatform->getL2(), pHWPlatform->getL3(), pContext);
   pLEDsTask->init(500);
 
   sched.addTask(pDroneTask);
+  sched.addTask(pTempTask);
+  sched.addTask(pHangarTask);
   sched.addTask(pLEDsTask);
 #endif
 
