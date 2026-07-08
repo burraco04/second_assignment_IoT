@@ -13,9 +13,9 @@ public:
   void tick();
 
 private:
-  enum { WAITING, RESETTING } state;
+  enum State { WAITING, RESETTING } state;
 
-  void setState(int state);
+  void setState(State state);
   bool checkAndSetJustEntered();
   void log(const String& msg);
   bool resetEnabled();

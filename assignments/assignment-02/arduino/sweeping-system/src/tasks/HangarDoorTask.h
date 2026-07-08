@@ -13,9 +13,9 @@ public:
   void tick();
 
 private:
-  enum { CLOSED, OPENING, OPEN, CLOSING } state;
+  enum State { CLOSED, OPENING, OPEN, CLOSING } state;
 
-  void setState(int state);
+  void setState(State state);
   long elapsedTimeInState();
   bool checkAndSetJustEntered();
   void log(const String& msg);

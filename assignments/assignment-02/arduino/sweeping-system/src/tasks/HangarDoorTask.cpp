@@ -69,7 +69,7 @@ void HangarDoorTask::tick(){
   }
 }
 
-void HangarDoorTask::setState(int s){
+void HangarDoorTask::setState(State s){
   state = s;
   stateTimestamp = millis();
   justEntered = true;

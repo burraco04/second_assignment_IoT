@@ -37,7 +37,7 @@ void DPDTask::tick(){
   }
 }
 
-void DPDTask::setState(int s){
+void DPDTask::setState(State s){
   state = s;
   stateTimestamp = millis();
   justEntered = true;

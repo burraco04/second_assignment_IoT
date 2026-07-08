@@ -41,7 +41,7 @@ void ResetButtonTask::tick(){
   }
 }
 
-void ResetButtonTask::setState(int s){
+void ResetButtonTask::setState(State s){
   state = s;
   stateTimestamp = millis();
   justEntered = true;

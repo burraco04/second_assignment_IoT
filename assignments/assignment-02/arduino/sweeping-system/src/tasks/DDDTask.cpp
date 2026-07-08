@@ -94,7 +94,7 @@ bool DDDTask::isDroneLanded(float distance){
   return distance != NO_OBJ_DETECTED && distance < D2;
 }
 
-void DDDTask::setState(int s){
+void DDDTask::setState(State s){
   state = s;
   stateTimestamp = millis();
   justEntered = true;

@@ -10,5 +10,8 @@
 #define PIR_PIN    3
 #define SONAR_ECHO_PIN 4
 #define SONAR_TRIG_PIN 5
+#define LCD_ADDRESS 0x27
+#define LCD_COLS   16
+#define LCD_ROWS   2
 
 #endif

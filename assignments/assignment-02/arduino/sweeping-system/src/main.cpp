@@ -12,6 +12,7 @@
 #include "tasks/DDDTask.h"
 #include "tasks/DPDTask.h"
 #include "tasks/ResetButtonTask.h"
+#include "tasks/LCDTask.h"
 #include "tasks/LEDsTask.h"
 #include "tasks/TempTask.h"
 
@@ -55,6 +56,9 @@ void setup() {
   Task* pHangarDoorTask = new HangarDoorTask(pHWPlatform->getMotor(), pContext);
   pHangarDoorTask->init(100);
 
+  Task* pLCDTask = new LCDTask(pContext);
+  pLCDTask->init(500);
+
   Task* pLEDsTask = new LEDsTask(pHWPlatform->getL1(), pHWPlatform->getL2(), pHWPlatform->getL3(), pContext);
   pLEDsTask->init(500);
 
@@ -65,6 +69,7 @@ void setup() {
   sched.addTask(pHangarTask);
   sched.addTask(pDDDTask);
   sched.addTask(pHangarDoorTask);
+  sched.addTask(pLCDTask);
   sched.addTask(pLEDsTask);
 #endif
 
