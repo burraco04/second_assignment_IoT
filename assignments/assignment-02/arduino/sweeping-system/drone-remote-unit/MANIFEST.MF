@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: DruApp
+Class-Path: lib/jssc-2.9.4.jar
+

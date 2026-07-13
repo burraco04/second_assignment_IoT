@@ -1,6 +1,7 @@
 #include "tasks/HangarTask.h"
 #include <Arduino.h>
 #include "kernel/Logger.h"
+#include "kernel/MsgService.h"
 
 #define TEMP1 30.0
 #define TEMP2 40.0
@@ -20,6 +21,7 @@ void HangarTask::tick(){
     case Context::NORMAL: {
       if (checkAndSetJustEntered()){
         log(F("[HANGAR] NORMAL"));
+        MsgService.sendMsg(String(F("HANGAR:NORMAL")));
       }
       updateHangarState();
       break;
@@ -27,6 +29,7 @@ void HangarTask::tick(){
     case Context::PRE_ALARM: {
       if (checkAndSetJustEntered()){
         log(F("[HANGAR] PRE-ALARM"));
+        MsgService.sendMsg(String(F("HANGAR:PRE_ALARM")));
       }
       updateHangarState();
       break;
@@ -34,6 +37,7 @@ void HangarTask::tick(){
     case Context::ALARM: {
       if (checkAndSetJustEntered()){
         log(F("[HANGAR] ALARM"));
+        MsgService.sendMsg(String(F("HANGAR:ALARM")));
       }
       updateHangarState();
       break;
