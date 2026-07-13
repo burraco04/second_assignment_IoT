@@ -3,88 +3,142 @@
 #include "kernel/Logger.h"
 #include "kernel/MsgService.h"
 
+#define D1 0.50
+#define D2 0.10
+#define T1 3000
+#define T2 3000
+
 DroneTask::DroneTask(Context* pContext): pContext(pContext){
-  setState(WAITING);
+  state = RESTING;
+  stateTimestamp = millis();
+  conditionTimestamp = 0;
+  justEntered = true;
+  takeOffSignal = false;
+  landingSignal = false;
+  pContext->setResting();
 }
 
 void DroneTask::tick(){
+  readCommand();
+  syncStateFromContext();
+
+  if (checkAndSetJustEntered()){
+    log(String(F("[DRONE] ")) + stateToString(state));
+  }
+
   switch (state){
-    case WAITING: {
-      if (checkAndSetJustEntered()){
-        log(F("[DRONE] WAITING"));
-      }
-
-      if (MsgService.isMsgAvailable()){
-        Msg* msg = MsgService.receiveMsg();
-        if (msg != NULL){
-          applyCommand(msg->getContent());
-          delete msg;
-        }
-      }
+    case RESTING:
+      updateResting();
       break;
-    }
 
-    case APPLY_RESTING: {
-      if (checkAndSetJustEntered()){
-        pContext->setResting();
-        log(F("[DRONE] RESTING"));
-        MsgService.sendMsg(String(F("STATE:")) + stateToString(pContext->getDroneState()));
-        setState(WAITING);
-      }
+    case TAKING_OFF:
+      updateTakingOff();
       break;
-    }
 
-    case APPLY_TAKING_OFF: {
-      if (checkAndSetJustEntered()){
-        pContext->setTakingOff();
-        log(F("[DRONE] TAKING_OFF"));
-        MsgService.sendMsg(String(F("STATE:")) + stateToString(pContext->getDroneState()));
-        setState(WAITING);
-      }
+    case FLYING:
+      updateFlying();
       break;
-    }
 
-    case APPLY_FLYING: {
-      if (checkAndSetJustEntered()){
-        pContext->setFlying();
-        log(F("[DRONE] FLYING"));
-        MsgService.sendMsg(String(F("STATE:")) + stateToString(pContext->getDroneState()));
-        setState(WAITING);
-      }
+    case LANDING:
+      updateLanding();
       break;
-    }
 
-    case APPLY_LANDING: {
-      if (checkAndSetJustEntered()){
-        pContext->setLanding();
-        log(F("[DRONE] LANDING"));
-        MsgService.sendMsg(String(F("STATE:")) + stateToString(pContext->getDroneState()));
-        setState(WAITING);
-      }
+    case SUSPENDED:
+      updateSuspended();
       break;
-    }
+  }
+}
 
-    case APPLY_SUSPENDED: {
-      if (checkAndSetJustEntered()){
-        pContext->setSuspended();
-        log(F("[DRONE] SUSPENDED"));
-        MsgService.sendMsg(String(F("STATE:")) + stateToString(pContext->getDroneState()));
-        setState(WAITING);
-      }
-      break;
-    }
+void DroneTask::updateResting(){
+  resetConditionTimer();
+  landingSignal = false;
 
-    case APPLY_NORMAL: {
-      if (checkAndSetJustEntered()){
-        if (!pContext->isAlarm()){
-          pContext->clearSuspended();
-        }
-        log(F("[DRONE] NORMAL"));
-        MsgService.sendMsg(String(F("STATE:")) + stateToString(pContext->getDroneState()));
-        setState(WAITING);
-      }
-      break;
+  if (pContext->isAlarm()){
+    setState(SUSPENDED);
+  } else if (takeOffSignal){
+    takeOffSignal = false;
+    if (pContext->isPreAlarm()){
+      log(F("[DRONE] TAKEOFF_BLOCKED"));
+    } else {
+      setState(TAKING_OFF);
     }
+  }
+}
+
+void DroneTask::updateTakingOff(){
+  takeOffSignal = false;
+  landingSignal = false;
+
+  if (pContext->isAlarm()){
+    setState(SUSPENDED);
+  } else if (isDroneOut()){
+    if (conditionHeldFor(T1)){
+      setState(FLYING);
+    }
+  } else {
+    resetConditionTimer();
+  }
+}
+
+void DroneTask::updateFlying(){
+  resetConditionTimer();
+  takeOffSignal = false;
+
+  if (pContext->isAlarm()){
+    landingSignal = false;
+    setState(SUSPENDED);
+  } else if (landingSignal){
+    landingSignal = false;
+    if (pContext->isPreAlarm()){
+      log(F("[DRONE] LAND_BLOCKED"));
+    } else if (!pContext->isDroneDetected()){
+      log(F("[DRONE] LAND_WAITING_DPD"));
+    } else {
+      setState(LANDING);
+    }
+  }
+}
+
+void DroneTask::updateLanding(){
+  takeOffSignal = false;
+  landingSignal = false;
+
+  if (pContext->isAlarm()){
+    setState(SUSPENDED);
+  } else if (isDroneLanded()){
+    if (conditionHeldFor(T2)){
+      setState(RESTING);
+    }
+  } else {
+    resetConditionTimer();
+  }
+}
+
+void DroneTask::updateSuspended(){
+  takeOffSignal = false;
+  landingSignal = false;
+  resetConditionTimer();
+
+  if (pContext->isAlarm()){
+    return;
+  }
+
+  if (isDroneOutsideAfterSuspension()){
+    setState(FLYING);
+  } else if (isDroneLanded()){
+    setState(RESTING);
+  }
+}
+
+void DroneTask::readCommand(){
+  if (!MsgService.isMsgAvailable()){
+    return;
+  }
+
+  Msg* msg = MsgService.receiveMsg();
+  if (msg != NULL){
+    applyCommand(msg->getContent());
+    delete msg;
   }
 }
 
@@ -93,57 +147,131 @@ void DroneTask::applyCommand(const String& command){
   cmd.trim();
   cmd.toUpperCase();
 
-  if (cmd == "REST" || cmd == "DRONE:REST"){
-    setState(APPLY_RESTING);
-  } else if (cmd == "TAKEOFF" || cmd == "DRONE:TAKEOFF" || cmd == "TAKE_OFF"){
-    if (pContext->isSuspended() || pContext->isPreAlarm() || pContext->isAlarm()){
-      log(F("[DRONE] TAKEOFF_BLOCKED"));
-    } else if (!pContext->isResting()){
-      log(F("[DRONE] TAKEOFF_IGNORED"));
-    } else {
-      setState(APPLY_TAKING_OFF);
-    }
-  } else if (cmd == "FLY" || cmd == "DRONE:FLY"){
-    setState(APPLY_FLYING);
+  if (cmd == "TAKEOFF" || cmd == "DRONE:TAKEOFF" || cmd == "TAKE_OFF"){
+    takeOffSignal = true;
   } else if (cmd == "LAND" || cmd == "DRONE:LAND"){
-    if (pContext->isSuspended() || pContext->isPreAlarm() || pContext->isAlarm()){
-      log(F("[DRONE] LAND_BLOCKED"));
-    } else if (!pContext->isFlying()){
-      log(F("[DRONE] LAND_IGNORED"));
-    } else if (!pContext->isDroneDetected()){
-      log(F("[DRONE] LAND_WAITING_DPD"));
+    landingSignal = true;
+  } else if (cmd == "ALARM" || cmd == "SYSTEM:ALARM"){
+    pContext->setAlarm();
+  } else if (cmd == "SUSPEND" || cmd == "SYSTEM:SUSPEND"){
+    pContext->setSuspended();
+  } else if (cmd == "RESET" || cmd == "SYSTEM:RESET"){
+    takeOffSignal = false;
+    landingSignal = false;
+    resetConditionTimer();
+    pContext->reset();
+  } else if (cmd == "REST" || cmd == "DRONE:REST"){
+    takeOffSignal = false;
+    landingSignal = false;
+    resetConditionTimer();
+    pContext->setResting();
+  } else if (cmd == "FLY" || cmd == "DRONE:FLY"){
+    takeOffSignal = false;
+    landingSignal = false;
+    resetConditionTimer();
+    pContext->setFlying();
+  } else if (cmd == "NORMAL" || cmd == "SYSTEM:NORMAL"){
+    if (pContext->isAlarm()){
+      log(F("[DRONE] NORMAL_BLOCKED"));
     } else {
-      setState(APPLY_LANDING);
-    }
-  } else if (cmd == "SUSPEND" || cmd == "SYSTEM:SUSPEND" || cmd == "ALARM"){
-    if (cmd == "ALARM"){
-      pContext->setAlarm();
-      log(F("[DRONE] ALARM"));
-      MsgService.sendMsg(String(F("STATE:")) + stateToString(pContext->getDroneState()));
-    } else {
-      setState(APPLY_SUSPENDED);
-    }
-  } else if (cmd == "NORMAL" || cmd == "SYSTEM:NORMAL" || cmd == "RESET"){
-    if (cmd == "RESET"){
-      pContext->reset();
-      log(F("[DRONE] RESET"));
-      MsgService.sendMsg(String(F("STATE:")) + stateToString(pContext->getDroneState()));
-    } else {
-      if (pContext->isAlarm()){
-        log(F("[DRONE] NORMAL_BLOCKED"));
-      } else {
-        setState(APPLY_NORMAL);
-      }
+      pContext->clearSuspended();
     }
   } else {
     log(String(F("[DRONE] IGNORED ")) + cmd);
   }
 }
 
-void DroneTask::setState(int s){
+void DroneTask::syncStateFromContext(){
+  State contextState = stateFromContext(pContext->getDroneState());
+  if (contextState != state){
+    state = contextState;
+    stateTimestamp = millis();
+    conditionTimestamp = 0;
+    justEntered = true;
+  }
+}
+
+DroneTask::State DroneTask::stateFromContext(Context::DroneState s){
+  switch (s){
+    case Context::RESTING:
+      return RESTING;
+    case Context::TAKING_OFF:
+      return TAKING_OFF;
+    case Context::FLYING:
+      return FLYING;
+    case Context::LANDING:
+      return LANDING;
+    case Context::SUSPENDED:
+      return SUSPENDED;
+  }
+  return RESTING;
+}
+
+void DroneTask::setState(State s){
+  if (state == s){
+    return;
+  }
+
   state = s;
   stateTimestamp = millis();
+  conditionTimestamp = 0;
   justEntered = true;
+  updateContextState(s);
+  notifyState();
+}
+
+void DroneTask::updateContextState(State s){
+  switch (s){
+    case RESTING:
+      pContext->setResting();
+      break;
+    case TAKING_OFF:
+      pContext->setTakingOff();
+      break;
+    case FLYING:
+      pContext->setFlying();
+      break;
+    case LANDING:
+      pContext->setLanding();
+      break;
+    case SUSPENDED:
+      pContext->setSuspended();
+      break;
+  }
+}
+
+void DroneTask::notifyState(){
+  MsgService.sendMsg(String(F("STATE:")) + stateToString(state));
+}
+
+void DroneTask::resetConditionTimer(){
+  conditionTimestamp = 0;
+}
+
+bool DroneTask::conditionHeldFor(long duration){
+  long now = millis();
+
+  if (conditionTimestamp == 0){
+    conditionTimestamp = now;
+    return false;
+  }
+
+  return (now - conditionTimestamp) >= duration;
+}
+
+bool DroneTask::isDroneOut(){
+  float distance = pContext->getDistance();
+  return distance < 0 || distance > D1;
+}
+
+bool DroneTask::isDroneLanded(){
+  float distance = pContext->getDistance();
+  return distance >= 0 && distance < D2;
+}
+
+bool DroneTask::isDroneOutsideAfterSuspension(){
+  float distance = pContext->getDistance();
+  return distance < 0 || distance > D2;
 }
 
 bool DroneTask::checkAndSetJustEntered(){
@@ -158,13 +286,18 @@ void DroneTask::log(const String& msg){
   Logger.log(msg);
 }
 
-String DroneTask::stateToString(Context::DroneState s){
+String DroneTask::stateToString(State s){
   switch (s){
-    case Context::RESTING: return "RESTING";
-    case Context::TAKING_OFF: return "TAKING_OFF";
-    case Context::FLYING: return "FLYING";
-    case Context::LANDING: return "LANDING";
-    case Context::SUSPENDED: return "SUSPENDED";
+    case RESTING:
+      return "RESTING";
+    case TAKING_OFF:
+      return "TAKING_OFF";
+    case FLYING:
+      return "FLYING";
+    case LANDING:
+      return "LANDING";
+    case SUSPENDED:
+      return "SUSPENDED";
   }
   return "UNKNOWN";
 }

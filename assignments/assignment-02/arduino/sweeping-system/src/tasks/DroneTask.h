@@ -12,16 +12,34 @@ public:
   void tick();
 
 private:
-  enum { WAITING, APPLY_RESTING, APPLY_TAKING_OFF, APPLY_FLYING, APPLY_LANDING, APPLY_SUSPENDED, APPLY_NORMAL } state;
+  enum State { RESTING, TAKING_OFF, FLYING, LANDING, SUSPENDED } state;
 
-  void setState(int state);
+  void setState(State state);
+  void syncStateFromContext();
+  State stateFromContext(Context::DroneState state);
   bool checkAndSetJustEntered();
   void log(const String& msg);
-  String stateToString(Context::DroneState state);
+  String stateToString(State state);
+  void readCommand();
   void applyCommand(const String& command);
+  void updateResting();
+  void updateTakingOff();
+  void updateFlying();
+  void updateLanding();
+  void updateSuspended();
+  void resetConditionTimer();
+  bool conditionHeldFor(long duration);
+  bool isDroneOut();
+  bool isDroneLanded();
+  bool isDroneOutsideAfterSuspension();
+  void updateContextState(State state);
+  void notifyState();
 
   long stateTimestamp;
+  long conditionTimestamp;
   bool justEntered;
+  bool takeOffSignal;
+  bool landingSignal;
   Context* pContext;
 };
 
