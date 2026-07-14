@@ -88,7 +88,7 @@ public final class JsscSerialConnection implements SerialConnection {
   }
 
   private static IOException toIOException(SerialPortException ex) {
-    return new IOException(ex.getPortName() + " " + ex.getMethodName() + ": " + ex.getExceptionType(), ex);
+    return new IOException(ex.getPort().getPortName() + " " + ex.getMethodName() + ": " + ex.getExceptionType(), ex);
   }
 
   private final class LineReader implements SerialPortEventListener {
