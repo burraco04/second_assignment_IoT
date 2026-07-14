@@ -11,6 +11,10 @@ Java Swing GUI for the Smart Drone Hangar assignment.
 
 The serial connection is handled through JSSC.
 
+If the IDE reports that imports such as `jssc.SerialPort` cannot be resolved,
+make sure `lib/jssc-2.9.4.jar` is included in the Java project classpath. The
+workspace VS Code settings already reference this jar.
+
 ## Run
 
 Build the executable jar:

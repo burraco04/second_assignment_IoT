@@ -1,3 +1,6 @@
 {
-    "C_Cpp.errorSquiggles": "Disabled"
+    "C_Cpp.errorSquiggles": "Disabled",
+    "java.project.referencedLibraries": [
+        "drone-remote-unit/lib/jssc-2.9.4.jar"
+    ]
 }
