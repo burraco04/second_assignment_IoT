@@ -36,7 +36,7 @@ void TempTask::tick(){
   }
 }
 
-void TempTask::setState(int s){
+void TempTask::setState(State s){
   state = s;
   stateTimestamp = millis();
   justEntered = true;

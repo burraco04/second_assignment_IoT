@@ -13,9 +13,9 @@ public:
   void tick();
 
 private:
-  enum { MEASURING, SLEEPING } state;
+  enum State { MEASURING, SLEEPING } state;
 
-  void setState(int state);
+  void setState(State state);
   bool checkAndSetJustEntered();
   void log(const String& msg);
 

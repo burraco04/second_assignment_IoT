@@ -3,7 +3,7 @@
 #include "kernel/Logger.h"
 #include "kernel/MsgService.h"
 
-#define TEMP1 30.0
+#define TEMP1 35.0
 #define TEMP2 40.0
 #define T3 3000
 #define T4 5000

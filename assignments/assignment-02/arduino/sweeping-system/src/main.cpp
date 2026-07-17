@@ -5,7 +5,6 @@
 #include "kernel/MsgService.h"
 #include "model/Context.h"
 #include "model/HWPlatform.h"
-#include "tasks/TestHWTask.h"
 #include "tasks/DroneTask.h"
 #include "tasks/HangarTask.h"
 #include "tasks/HangarDoorTask.h"
@@ -71,13 +70,6 @@ void setup() {
   sched.addTask(pHangarDoorTask);
   sched.addTask(pLCDTask);
   sched.addTask(pLEDsTask);
-#endif
-
-#ifdef __TESTING_HW__
-  /* Testing */
-  Task* pTestHWTask = new TestHWTask(pHWPlatform);
-  pTestHWTask->init(2000);
-  sched.addTask(pTestHWTask);
 #endif
 }
 

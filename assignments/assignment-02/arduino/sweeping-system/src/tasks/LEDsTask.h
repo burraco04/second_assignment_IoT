@@ -19,7 +19,7 @@ private:
   
   bool checkAndSetJustEntered();
   
-  enum { T0, T1, T2} state;
+  enum State { T0, T1, T2 } state;
   long stateTimestamp;
   bool justEntered;
 
