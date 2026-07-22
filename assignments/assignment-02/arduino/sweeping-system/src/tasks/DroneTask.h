@@ -34,6 +34,7 @@ private:
   bool isDroneOutsideAfterSuspension();
   void updateContextState(State state);
   void notifyState();
+  String hangarStateToString(Context::HangarState state);
 
   long stateTimestamp;
   long conditionTimestamp;

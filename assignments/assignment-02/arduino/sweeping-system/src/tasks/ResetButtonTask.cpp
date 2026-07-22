@@ -27,9 +27,10 @@ void ResetButtonTask::tick(){
     case RESETTING: {
       if (checkAndSetJustEntered()){
         log(F("[RESET] RESETTING"));
-        pContext->reset();
-        MsgService.sendMsg(String(F("HANGAR:NORMAL")));
-        MsgService.sendMsg(String(F("STATE:RESTING")));
+        if (pContext->resetAlarm()){
+          MsgService.sendMsg(String(F("HANGAR:")) + hangarStateToString(pContext->getHangarState()));
+          MsgService.sendMsg(String(F("STATE:")) + droneStateToString(pContext->getDroneState()));
+        }
       }
 
       if (!pButton->isPressed()){
@@ -60,5 +61,25 @@ void ResetButtonTask::log(const String& msg){
 }
 
 bool ResetButtonTask::resetEnabled(){
-  return pContext->isAlarm() || pContext->isPreAlarm() || pContext->isSuspended();
+  return pContext->isAlarm();
+}
+
+String ResetButtonTask::droneStateToString(Context::DroneState s){
+  switch (s){
+    case Context::RESTING: return "RESTING";
+    case Context::TAKING_OFF: return "TAKING_OFF";
+    case Context::FLYING: return "FLYING";
+    case Context::LANDING: return "LANDING";
+    case Context::SUSPENDED: return "SUSPENDED";
+  }
+  return "UNKNOWN";
+}
+
+String ResetButtonTask::hangarStateToString(Context::HangarState s){
+  switch (s){
+    case Context::NORMAL: return "NORMAL";
+    case Context::PRE_ALARM: return "PRE_ALARM";
+    case Context::ALARM: return "ALARM";
+  }
+  return "UNKNOWN";
 }

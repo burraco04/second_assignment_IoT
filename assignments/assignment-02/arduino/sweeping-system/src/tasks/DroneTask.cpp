@@ -159,7 +159,13 @@ void DroneTask::applyCommand(const String& command){
     takeOffSignal = false;
     landingSignal = false;
     resetConditionTimer();
-    pContext->reset();
+    if (pContext->resetAlarm()){
+      syncStateFromContext();
+      MsgService.sendMsg(String(F("HANGAR:")) + hangarStateToString(pContext->getHangarState()));
+      notifyState();
+    } else {
+      log(F("[DRONE] RESET_IGNORED"));
+    }
   } else if (cmd == "REST" || cmd == "DRONE:REST"){
     takeOffSignal = false;
     landingSignal = false;
@@ -298,6 +304,18 @@ String DroneTask::stateToString(State s){
       return "LANDING";
     case SUSPENDED:
       return "SUSPENDED";
+  }
+  return "UNKNOWN";
+}
+
+String DroneTask::hangarStateToString(Context::HangarState s){
+  switch (s){
+    case Context::NORMAL:
+      return "NORMAL";
+    case Context::PRE_ALARM:
+      return "PRE_ALARM";
+    case Context::ALARM:
+      return "ALARM";
   }
   return "UNKNOWN";
 }

@@ -19,6 +19,8 @@ private:
   bool checkAndSetJustEntered();
   void log(const String& msg);
   bool resetEnabled();
+  String droneStateToString(Context::DroneState state);
+  String hangarStateToString(Context::HangarState state);
 
   Button* pButton;
   Context* pContext;

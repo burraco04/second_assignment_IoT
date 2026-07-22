@@ -6,7 +6,10 @@ Context::Context(){
   droneDetected = false;
   droneState = RESTING;
   resumeState = RESTING;
+  alarmDroneState = RESTING;
   hangarState = NORMAL;
+  alarmHangarState = NORMAL;
+  alarmSnapshotAvailable = false;
   temperature = 0.0;
   distance = 0.0;
 }
@@ -35,7 +38,10 @@ void Context::reset(){
   droneDetected = false;
   droneState = RESTING;
   resumeState = RESTING;
+  alarmDroneState = RESTING;
   hangarState = NORMAL;
+  alarmHangarState = NORMAL;
+  alarmSnapshotAvailable = false;
   temperature = 0.0;
   distance = 0.0;
 }
@@ -79,6 +85,11 @@ void Context::setHangarPreAlarm(){
 }
 
 void Context::setHangarAlarm(){
+  if (hangarState != ALARM){
+    alarmDroneState = droneState;
+    alarmHangarState = hangarState;
+    alarmSnapshotAvailable = true;
+  }
   hangarState = ALARM;
 }
 
@@ -88,6 +99,24 @@ void Context::setAlarm(){
 
 void Context::clearAlarm(){
   hangarState = NORMAL;
+}
+
+bool Context::resetAlarm(){
+  if (hangarState != ALARM){
+    return false;
+  }
+
+  if (alarmSnapshotAvailable){
+    droneState = alarmDroneState;
+    resumeState = alarmDroneState;
+    hangarState = alarmHangarState;
+  } else {
+    droneState = resumeState;
+    hangarState = NORMAL;
+  }
+
+  alarmSnapshotAvailable = false;
+  return true;
 }
 
 Context::DroneState Context::getDroneState(){

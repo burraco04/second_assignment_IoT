@@ -31,6 +31,7 @@ public:
   void setHangarAlarm();
   void setAlarm();
   void clearAlarm();
+  bool resetAlarm();
 
   DroneState getDroneState();
   HangarState getHangarState();
@@ -65,7 +66,10 @@ private:
   bool droneDetected;
   DroneState droneState;
   DroneState resumeState;
+  DroneState alarmDroneState;
   HangarState hangarState;
+  HangarState alarmHangarState;
+  bool alarmSnapshotAvailable;
   float temperature;
   float distance;
 };

@@ -223,11 +223,11 @@ public final class DroneRemoteUnitFrame extends JFrame {
     connectButton.setText(connected ? "Disconnect" : "Connect");
     takeOffButton.setEnabled(connected);
     landButton.setEnabled(connected);
-    resetButton.setEnabled(connected);
     rawCommandField.setEnabled(connected);
     rawCommandButton.setEnabled(connected);
     portSelector.setEnabled(!connected);
     refreshButton.setEnabled(!connected);
+    updateResetButton();
   }
 
   private void sendRawCommand() {
@@ -285,6 +285,12 @@ public final class DroneRemoteUnitFrame extends JFrame {
     } else {
       hangarStateLabel.setForeground(new Color(0, 120, 0));
     }
+    updateResetButton();
+  }
+
+  private void updateResetButton() {
+    boolean connected = connection != null && connection.isOpen();
+    resetButton.setEnabled(connected && "Alarm".equals(hangarStateLabel.getText()));
   }
 
   private static String formatDroneState(String state) {
