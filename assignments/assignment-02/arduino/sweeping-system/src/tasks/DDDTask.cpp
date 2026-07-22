@@ -49,7 +49,7 @@ void DDDTask::updateDistance(){
   float distance = pSonar->getDistance();
   pContext->setDistance(distance);
 
-  if (pContext->isLanding()){
+  if (pContext->isTakingOff() || pContext->isLanding()){
     MsgService.sendMsg(String(F("DISTANCE:")) + String(distance, 2));
   }
 }
