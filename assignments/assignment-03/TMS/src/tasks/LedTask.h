@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../Scheduler.h"
+#include "Scheduler.h"
 #include "TmsContext.h"
 
 enum class LedState {
@@ -21,4 +21,3 @@ private:
 
     void applyOutputs() const;
 };
-

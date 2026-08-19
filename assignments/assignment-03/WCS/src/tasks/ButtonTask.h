@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../Scheduler.h"
+#include "Scheduler.h"
 #include "WcsContext.h"
 
 enum class ButtonState {
@@ -25,4 +25,3 @@ private:
     bool readPressed() const;
     void requestModeToggle();
 };
-

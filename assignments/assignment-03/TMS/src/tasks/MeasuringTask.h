@@ -2,8 +2,8 @@
 
 #include <PubSubClient.h>
 
-#include "../../Scheduler.h"
 #include "../../SonarSensor.h"
+#include "Scheduler.h"
 #include "TmsContext.h"
 
 enum class MeasuringState {
@@ -26,4 +26,3 @@ private:
     int computeWaterLevel(float distanceCm) const;
     void publishTelemetry();
 };
-

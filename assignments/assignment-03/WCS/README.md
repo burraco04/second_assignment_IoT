@@ -1,10 +1,10 @@
 # Water Channel Subsystem (WCS)
 
-Arduino UNO implementation of the WCS using synchronous finite state machines and a cooperative task scheduler.
+Arduino UNO implementation of the WCS using synchronous finite state machines and the shared cooperative task scheduler in `../common`.
 
 ## Architecture
 
-- `CusTask`: serial communication with CUS, connection timeout, mode acknowledgements, valve commands.
+- `SerialTask`: serial communication with CUS, mode acknowledgements, valve commands.
 - `ButtonTask`: debounced local button FSM, toggles `MANUAL` / `AUTOMATIC` requests.
 - `PotentiometerTask`: sleeps outside `MANUAL`, samples the potentiometer in `MANUAL`.
 - `ValveTask`: maps opening percentage `0..100` to servo angle `0..90`.
@@ -16,12 +16,14 @@ Arduino UNO implementation of the WCS using synchronous finite state machines an
 
 Incoming commands from CUS:
 
+- `OPEN`
+- `SEMI-OPEN`
+- `CLOSE`
 - `MODE AUTOMATIC`
 - `MODE MANUAL`
 - `MODE UNCONNECTED`
 - `VALVE <0-100>`
 - `OPENING <0-100>`
-- `STATE <MODE> <0-100>`
 - `PING`
 
 Outgoing messages to CUS:
@@ -32,5 +34,4 @@ Outgoing messages to CUS:
 - `VALVE <0-100>`
 - `PONG`
 
-If no serial message is received for `CUS_TIMEOUT_MS`, the WCS enters `UNCONNECTED` and closes the valve.
-
+In `AUTOMATIC`, `OPEN` / `SEMI-OPEN` / `CLOSE` drive the valve. In `MANUAL`, the potentiometer drives the valve and WCS reports `VALVE <0-100>` to CUS.

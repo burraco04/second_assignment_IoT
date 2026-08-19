@@ -19,7 +19,7 @@ constexpr uint8_t LCD_COLUMNS = 16;
 constexpr uint8_t LCD_ROWS = 2;
 
 constexpr unsigned long BUTTON_PERIOD_MS = 50;
-constexpr unsigned long CUS_PERIOD_MS = 100;
+constexpr unsigned long SERIAL_PERIOD_MS = 100;
 constexpr unsigned long POTENTIOMETER_PERIOD_MS = 500;
 constexpr unsigned long VALVE_PERIOD_MS = 500;
 constexpr unsigned long LCD_PERIOD_MS = 500;
@@ -31,4 +31,3 @@ constexpr int MIN_OPENING_PERCENT = 0;
 constexpr int MAX_OPENING_PERCENT = 100;
 constexpr int MIN_SERVO_ANGLE = 0;
 constexpr int MAX_SERVO_ANGLE = 90;
-

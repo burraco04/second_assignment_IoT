@@ -1,6 +1,6 @@
 # Tank Monitoring Subsystem (TMS)
 
-ESP32 implementation of the assignment TMS using synchronous finite state machines and a cooperative task scheduler.
+ESP32 implementation of the assignment TMS using synchronous finite state machines and the shared cooperative task scheduler in `../common`.
 
 ## Architecture
 
@@ -41,4 +41,3 @@ Install these Arduino libraries:
 
 - ESP32 board support package.
 - `PubSubClient`.
-

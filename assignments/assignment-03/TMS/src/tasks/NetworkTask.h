@@ -2,7 +2,7 @@
 
 #include <PubSubClient.h>
 
-#include "../../Scheduler.h"
+#include "Scheduler.h"
 #include "TmsContext.h"
 
 enum class NetworkState {
@@ -29,4 +29,3 @@ private:
     void handleWifiDisconnected(unsigned long now);
     void handleMqttDisconnected(unsigned long now);
 };
-

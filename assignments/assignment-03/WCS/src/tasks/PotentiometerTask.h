@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../Scheduler.h"
+#include "Scheduler.h"
 #include "WcsContext.h"
 
 enum class PotentiometerState {
@@ -19,4 +19,3 @@ private:
     WcsContext& context;
     PotentiometerState state = PotentiometerState::Sleeping;
 };
-

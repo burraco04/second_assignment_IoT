@@ -1,4 +1,4 @@
-#include "CusTask.h"
+#include "SerialTask.h"
 
 #include <Arduino.h>
 #include <stdlib.h>
@@ -24,22 +24,22 @@ static int parseOpening(const char* value) {
     return constrain(atoi(value), MIN_OPENING_PERCENT, MAX_OPENING_PERCENT);
 }
 
-CusTask::CusTask(WcsContext& context) : Task(CUS_PERIOD_MS), context(context) {}
+SerialTask::SerialTask(WcsContext& context) : Task(SERIAL_PERIOD_MS), context(context) {}
 
-void CusTask::init() {
-    context.lastCusMessage = millis();
+void SerialTask::init() {
     Serial.println(F("HELLO WCS"));
 }
 
-void CusTask::tick() {
+void SerialTask::tick() {
+    state = SerialState::Reading;
     readSerial();
-    handleTimeout();
-    sendPendingRequests();
+
+    state = SerialState::Writing;
+    sendPendingModeRequest();
     sendManualOpeningUpdate();
-    updateStateFromContext();
 }
 
-void CusTask::readSerial() {
+void SerialTask::readSerial() {
     while (Serial.available() > 0) {
         const char next = static_cast<char>(Serial.read());
 
@@ -64,24 +64,25 @@ void CusTask::readSerial() {
     }
 }
 
-void CusTask::handleLine(char* line) {
-    context.lastCusMessage = millis();
-    restoreConnectedState();
-
-    if (strncmp(line, "MODE ", 5) == 0) {
+void SerialTask::handleLine(char* line) {
+    if (strcmp(line, "OPEN") == 0) {
+        context.automaticValveCommand = WcsValveCommand::Open;
+    } else if (strcmp(line, "SEMI-OPEN") == 0) {
+        context.automaticValveCommand = WcsValveCommand::SemiOpen;
+    } else if (strcmp(line, "CLOSE") == 0) {
+        context.automaticValveCommand = WcsValveCommand::Close;
+    } else if (strncmp(line, "MODE ", 5) == 0) {
         handleModeCommand(line + 5);
     } else if (strncmp(line, "VALVE ", 6) == 0) {
         handleValveCommand(line + 6);
     } else if (strncmp(line, "OPENING ", 8) == 0) {
         handleValveCommand(line + 8);
-    } else if (strncmp(line, "STATE ", 6) == 0) {
-        handleStateCommand(line + 6);
     } else if (strcmp(line, "PING") == 0) {
         Serial.println(F("PONG"));
     }
 }
 
-void CusTask::handleModeCommand(const char* value) {
+void SerialTask::handleModeCommand(const char* value) {
     WcsMode nextMode;
     if (!parseMode(value, nextMode)) {
         return;
@@ -98,28 +99,11 @@ void CusTask::handleModeCommand(const char* value) {
     }
 }
 
-void CusTask::handleValveCommand(const char* value) {
-    context.cusOpening = parseOpening(value);
+void SerialTask::handleValveCommand(const char* value) {
+    context.manualOpening = parseOpening(value);
 }
 
-void CusTask::handleStateCommand(char* value) {
-    char* opening = strchr(value, ' ');
-    if (opening != nullptr) {
-        *opening = '\0';
-        handleValveCommand(opening + 1);
-    }
-    handleModeCommand(value);
-}
-
-void CusTask::handleTimeout() {
-    if (millis() - context.lastCusMessage <= CUS_TIMEOUT_MS) {
-        return;
-    }
-
-    context.mode = WcsMode::Unconnected;
-}
-
-void CusTask::sendPendingRequests() {
+void SerialTask::sendPendingModeRequest() {
     if (!context.modeChangeRequested) {
         return;
     }
@@ -134,7 +118,7 @@ void CusTask::sendPendingRequests() {
     lastModeRequestSent = now;
 }
 
-void CusTask::sendManualOpeningUpdate() {
+void SerialTask::sendManualOpeningUpdate() {
     if (!context.manualOpeningChanged || context.mode != WcsMode::Manual) {
         return;
     }
@@ -143,25 +127,3 @@ void CusTask::sendManualOpeningUpdate() {
     Serial.println(context.manualOpening);
     context.manualOpeningChanged = false;
 }
-
-void CusTask::restoreConnectedState() {
-    if (context.mode != WcsMode::Unconnected) {
-        return;
-    }
-    context.mode = context.lastConnectedMode;
-}
-
-void CusTask::updateStateFromContext() {
-    switch (context.mode) {
-    case WcsMode::Automatic:
-        state = CusState::Automatic;
-        break;
-    case WcsMode::Manual:
-        state = CusState::Manual;
-        break;
-    case WcsMode::Unconnected:
-        state = CusState::Unconnected;
-        break;
-    }
-}
-

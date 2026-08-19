@@ -10,6 +10,12 @@ enum class WcsMode {
     Unconnected
 };
 
+enum class WcsValveCommand {
+    Close,
+    SemiOpen,
+    Open
+};
+
 inline const char* modeToText(const WcsMode mode) {
     switch (mode) {
     case WcsMode::Automatic:
@@ -22,12 +28,24 @@ inline const char* modeToText(const WcsMode mode) {
     return "UNKNOWN";
 }
 
+inline int openingForCommand(const WcsValveCommand command) {
+    switch (command) {
+    case WcsValveCommand::Close:
+        return 0;
+    case WcsValveCommand::SemiOpen:
+        return 50;
+    case WcsValveCommand::Open:
+        return 100;
+    }
+    return 0;
+}
+
 struct WcsContext {
     WcsMode mode = WcsMode::Automatic;
     WcsMode lastConnectedMode = WcsMode::Automatic;
     WcsMode requestedMode = WcsMode::Automatic;
+    WcsValveCommand automaticValveCommand = WcsValveCommand::Close;
 
-    int cusOpening = 0;
     int manualOpening = 0;
     int valveOpening = 0;
 
@@ -53,7 +71,6 @@ struct WcsContext {
         if (mode == WcsMode::Unconnected) {
             return MIN_OPENING_PERCENT;
         }
-        return mode == WcsMode::Manual ? manualOpening : cusOpening;
+        return mode == WcsMode::Manual ? manualOpening : openingForCommand(automaticValveCommand);
     }
 };
-

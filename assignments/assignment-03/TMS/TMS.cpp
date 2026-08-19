@@ -2,9 +2,9 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 
-#include "Scheduler.h"
 #include "SonarSensor.h"
 #include "config.h"
+#include "Scheduler.h"
 #include "src/tasks/LedTask.h"
 #include "src/tasks/MeasuringTask.h"
 #include "src/tasks/NetworkTask.h"
@@ -33,4 +33,3 @@ void setup() {
 void loop() {
     scheduler.schedule();
 }
-

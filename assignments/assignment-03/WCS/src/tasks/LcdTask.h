@@ -2,8 +2,8 @@
 
 #include <LiquidCrystal.h>
 
-#include "../../Scheduler.h"
 #include "WcsContext.h"
+#include "Scheduler.h"
 
 enum class LcdState {
     Display
@@ -23,4 +23,3 @@ private:
 
     void printPadded(uint8_t row, const char* text);
 };
-

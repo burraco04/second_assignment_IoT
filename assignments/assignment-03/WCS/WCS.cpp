@@ -2,12 +2,12 @@
 #include <LiquidCrystal.h>
 #include <Servo.h>
 
-#include "Scheduler.h"
 #include "config.h"
+#include "Scheduler.h"
 #include "src/tasks/ButtonTask.h"
-#include "src/tasks/CusTask.h"
 #include "src/tasks/LcdTask.h"
 #include "src/tasks/PotentiometerTask.h"
+#include "src/tasks/SerialTask.h"
 #include "src/tasks/ValveTask.h"
 #include "src/tasks/WcsContext.h"
 
@@ -25,7 +25,7 @@ LiquidCrystal lcd(
 );
 
 ButtonTask buttonTask(context);
-CusTask cusTask(context);
+SerialTask serialTask(context);
 PotentiometerTask potentiometerTask(context);
 ValveTask valveTask(context, valveServo);
 LcdTask lcdTask(context, lcd);
@@ -33,7 +33,7 @@ LcdTask lcdTask(context, lcd);
 void setup() {
     Serial.begin(SERIAL_BAUD_RATE);
 
-    scheduler.addTask(&cusTask);
+    scheduler.addTask(&serialTask);
     scheduler.addTask(&buttonTask);
     scheduler.addTask(&potentiometerTask);
     scheduler.addTask(&valveTask);
@@ -44,4 +44,3 @@ void setup() {
 void loop() {
     scheduler.schedule();
 }
-

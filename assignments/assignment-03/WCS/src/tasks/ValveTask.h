@@ -2,8 +2,8 @@
 
 #include <Servo.h>
 
-#include "../../Scheduler.h"
 #include "WcsContext.h"
+#include "Scheduler.h"
 
 enum class ValveState {
     Closed,
@@ -27,4 +27,3 @@ private:
     void applyOpening(int opening);
     void updateState(int opening);
 };
-

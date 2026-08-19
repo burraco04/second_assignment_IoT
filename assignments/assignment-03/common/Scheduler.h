@@ -29,7 +29,7 @@ public:
     static constexpr uint8_t MAX_TASKS = 8;
 
     bool addTask(Task* task) {
-        if (taskCount >= MAX_TASKS || task == nullptr) {
+        if (task == nullptr || taskCount >= MAX_TASKS) {
             return false;
         }
         tasks[taskCount++] = task;
