@@ -1,0 +1,14 @@
+plugins {
+    id 'application'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+application {
+    mainClass = 'it.unibo.iot.assignment03.dbs.DbsApplication'
+}
+
