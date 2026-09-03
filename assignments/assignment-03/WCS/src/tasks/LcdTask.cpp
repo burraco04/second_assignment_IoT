@@ -4,11 +4,12 @@
 #include <stdio.h>
 #include <string.h>
 
-LcdTask::LcdTask(WcsContext& context, LiquidCrystal& lcd)
+LcdTask::LcdTask(WcsContext& context, LiquidCrystal_I2C& lcd)
     : Task(LCD_PERIOD_MS), context(context), lcd(lcd) {}
 
 void LcdTask::init() {
-    lcd.begin(LCD_COLUMNS, LCD_ROWS);
+    lcd.init();
+    lcd.backlight();
     lcd.clear();
 }
 

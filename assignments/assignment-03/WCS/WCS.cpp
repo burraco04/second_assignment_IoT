@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <LiquidCrystal.h>
+#include <LiquidCrystal_I2C.h>
 #include <Servo.h>
 
 #include "config.h"
@@ -15,14 +15,7 @@ Scheduler scheduler;
 WcsContext context;
 
 Servo valveServo;
-LiquidCrystal lcd(
-    LCD_RS_PIN,
-    LCD_ENABLE_PIN,
-    LCD_D4_PIN,
-    LCD_D5_PIN,
-    LCD_D6_PIN,
-    LCD_D7_PIN
-);
+LiquidCrystal_I2C lcd(LCD_I2C_ADDRESS, LCD_COLUMNS, LCD_ROWS);
 
 ButtonTask buttonTask(context);
 SerialTask serialTask(context);

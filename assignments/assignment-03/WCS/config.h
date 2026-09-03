@@ -9,12 +9,11 @@ constexpr bool BUTTON_ACTIVE_LOW = true;
 constexpr uint8_t POT_PIN = A0;
 constexpr uint8_t SERVO_PIN = 9;
 
-constexpr uint8_t LCD_RS_PIN = 12;
-constexpr uint8_t LCD_ENABLE_PIN = 11;
-constexpr uint8_t LCD_D4_PIN = 5;
-constexpr uint8_t LCD_D5_PIN = 4;
-constexpr uint8_t LCD_D6_PIN = 3;
-constexpr uint8_t LCD_D7_PIN = 6;
+// I2C LCD wiring on Arduino UNO:
+// GND -> GND, VCC -> 5V, SDA -> A4, SCL -> A5.
+constexpr uint8_t LCD_SDA_PIN = A4;
+constexpr uint8_t LCD_SCL_PIN = A5;
+constexpr uint8_t LCD_I2C_ADDRESS = 0x27;
 constexpr uint8_t LCD_COLUMNS = 16;
 constexpr uint8_t LCD_ROWS = 2;
 
