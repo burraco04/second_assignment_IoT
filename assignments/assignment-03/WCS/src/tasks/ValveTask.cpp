@@ -2,11 +2,11 @@
 
 #include <Arduino.h>
 
-ValveTask::ValveTask(WcsContext& context, Servo& servo)
+ValveTask::ValveTask(WcsContext& context, ServoMotor& servo)
     : Task(VALVE_PERIOD_MS), context(context), servo(servo) {}
 
 void ValveTask::init() {
-    servo.attach(SERVO_PIN);
+    servo.on();
     applyOpening(MIN_OPENING_PERCENT);
 }
 
@@ -18,7 +18,7 @@ void ValveTask::tick() {
 
 void ValveTask::applyOpening(const int opening) {
     const int angle = map(opening, MIN_OPENING_PERCENT, MAX_OPENING_PERCENT, MIN_SERVO_ANGLE, MAX_SERVO_ANGLE);
-    servo.write(angle);
+    servo.setPosition(angle);
     context.valveOpening = opening;
 }
 
@@ -33,4 +33,3 @@ void ValveTask::updateState(const int opening) {
         state = ValveState::SemiOpen;
     }
 }
-

@@ -7,7 +7,7 @@ Arduino UNO implementation of the WCS using synchronous finite state machines an
 - `SerialTask`: serial communication with CUS, mode acknowledgements, valve commands.
 - `ButtonTask`: debounced local button FSM, toggles `MANUAL` / `AUTOMATIC` requests.
 - `PotentiometerTask`: sleeps outside `MANUAL`, samples the potentiometer in `MANUAL`.
-- `ValveTask`: maps opening percentage `0..100` to servo angle `0..90`.
+- `ValveTask`: maps opening percentage `0..100` to servo angle `0..90` using `devices/ServoMotorImpl`.
 - `LcdTask`: displays current mode and valve opening on an I2C LCD.
 
 `WCS.cpp` only creates shared devices/state, registers tasks in the scheduler, and exposes `setup()` / `loop()`.

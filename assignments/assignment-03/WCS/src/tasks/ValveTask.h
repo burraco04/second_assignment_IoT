@@ -1,7 +1,6 @@
 #pragma once
 
-#include <Servo.h>
-
+#include "ServoMotor.h"
 #include "WcsContext.h"
 #include "Scheduler.h"
 
@@ -14,14 +13,14 @@ enum class ValveState {
 
 class ValveTask : public Task {
 public:
-    ValveTask(WcsContext& context, Servo& servo);
+    ValveTask(WcsContext& context, ServoMotor& servo);
 
     void init() override;
     void tick() override;
 
 private:
     WcsContext& context;
-    Servo& servo;
+    ServoMotor& servo;
     ValveState state = ValveState::Closed;
 
     void applyOpening(int opening);

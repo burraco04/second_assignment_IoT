@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <LiquidCrystal_I2C.h>
-#include <Servo.h>
 
+#include "ServoMotorImpl.h"
 #include "config.h"
 #include "Scheduler.h"
 #include "src/tasks/ButtonTask.h"
@@ -14,7 +14,7 @@
 Scheduler scheduler;
 WcsContext context;
 
-Servo valveServo;
+ServoMotorImpl valveServo(SERVO_PIN);
 LiquidCrystal_I2C lcd(LCD_I2C_ADDRESS, LCD_COLUMNS, LCD_ROWS);
 
 ButtonTask buttonTask(context);
