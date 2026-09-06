@@ -39,6 +39,9 @@ public final class DashboardFrame extends JFrame {
     private final JButton applyValveButton = new JButton("Apply");
     private final JSlider valveSlider = new JSlider(0, 100, 0);
     private volatile boolean polling;
+    private boolean programmaticSliderUpdate;
+    private boolean userEditedValve;
+    private Integer pendingValveOpening;
 
     public DashboardFrame(final DbsConfig config, final CusHttpClient client) {
         super("Smart Tank DBS");
@@ -123,6 +126,12 @@ public final class DashboardFrame extends JFrame {
         automaticButton.addActionListener(ignored -> sendMode(SystemMode.AUTOMATIC));
         manualButton.addActionListener(ignored -> sendMode(SystemMode.MANUAL));
         applyValveButton.addActionListener(ignored -> sendValve());
+        valveSlider.addChangeListener(ignored -> {
+            if (!programmaticSliderUpdate && valveSlider.isEnabled()) {
+                userEditedValve = true;
+                commandStatus.setText("Valve selected: " + valveSlider.getValue() + "%");
+            }
+        });
         setControlsEnabled(false, false);
     }
 
@@ -164,8 +173,31 @@ public final class DashboardFrame extends JFrame {
         }
         sampleCount.setText(chartPanel.sampleCount() + " samples");
 
-        valveSlider.setValue(state.valveOpening());
+        updateValveSlider(state);
         setControlsEnabled(available, state.mode() == SystemMode.MANUAL);
+    }
+
+    private void updateValveSlider(final CusState state) {
+        if (state.mode() != SystemMode.MANUAL) {
+            userEditedValve = false;
+            pendingValveOpening = null;
+            setSliderValue(state.valveOpening());
+            return;
+        }
+
+        if (pendingValveOpening != null && state.valveOpening() == pendingValveOpening) {
+            pendingValveOpening = null;
+        }
+
+        if (!userEditedValve && pendingValveOpening == null && !valveSlider.getValueIsAdjusting()) {
+            setSliderValue(state.valveOpening());
+        }
+    }
+
+    private void setSliderValue(final int value) {
+        programmaticSliderUpdate = true;
+        valveSlider.setValue(value);
+        programmaticSliderUpdate = false;
     }
 
     private void setControlsEnabled(final boolean available, final boolean manual) {
@@ -189,13 +221,18 @@ public final class DashboardFrame extends JFrame {
 
     private void sendValve() {
         final int opening = valveSlider.getValue();
+        pendingValveOpening = opening;
+        userEditedValve = false;
         commandStatus.setText("Sending valve " + opening + "%");
         CompletableFuture.runAsync(() -> {
             try {
                 client.setValveOpening(opening);
                 SwingUtilities.invokeLater(() -> commandStatus.setText("Valve accepted"));
             } catch (final Exception ex) {
-                SwingUtilities.invokeLater(() -> commandStatus.setText("Valve command failed"));
+                SwingUtilities.invokeLater(() -> {
+                    pendingValveOpening = null;
+                    commandStatus.setText("Valve command failed");
+                });
             }
         });
     }
@@ -208,4 +245,3 @@ public final class DashboardFrame extends JFrame {
         };
     }
 }
-
