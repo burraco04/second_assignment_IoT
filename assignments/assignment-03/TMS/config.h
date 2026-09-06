@@ -4,10 +4,10 @@
 
 // WiFi and MQTT configuration.
 // Replace these values before flashing the board.
-constexpr char WIFI_SSID[] = "YOUR_WIFI_SSID";
-constexpr char WIFI_PASSWORD[] = "YOUR_WIFI_PASSWORD";
+constexpr char WIFI_SSID[] = "Gointernet_08E9B6";
+constexpr char WIFI_PASSWORD[] = "gointernet123";
 
-constexpr char MQTT_HOST[] = "192.168.1.10";
+constexpr char MQTT_HOST[] = "192.168.15.72";
 constexpr uint16_t MQTT_PORT = 1883;
 constexpr char MQTT_USER[] = "";
 constexpr char MQTT_PASSWORD[] = "";

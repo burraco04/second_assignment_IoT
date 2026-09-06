@@ -30,11 +30,13 @@ void NetworkTask::tick() {
     const unsigned long now = millis();
 
     if (WiFi.status() != WL_CONNECTED) {
+        Serial.println("WIFI DISCONNECTED");
         handleWifiDisconnected(now);
         return;
     }
 
     if (!mqttClient.connected()) {
+        Serial.println("MQTT DISCONNECTED");
         handleMqttDisconnected(now);
         return;
     }
@@ -98,6 +100,8 @@ void NetworkTask::handleMqttDisconnected(const unsigned long now) {
         state = NetworkState::Connected;
         context.networkConnected = true;
         context.refreshConnectionError();
+    } else {
+        Serial.printf("MQTT connect failed, state=%d, host=%s, port=%u\n", mqttClient.state(), MQTT_HOST, MQTT_PORT);
     }
 }
 
