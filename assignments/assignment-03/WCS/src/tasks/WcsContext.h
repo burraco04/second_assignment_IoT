@@ -48,9 +48,11 @@ struct WcsContext {
 
     int manualOpening = 0;
     int valveOpening = 0;
+    int lastPotRawValue = -1;
 
     bool modeChangeRequested = false;
     bool manualOpeningChanged = false;
+    bool remoteManualOpening = false;
 
     unsigned long lastCusMessage = 0;
 

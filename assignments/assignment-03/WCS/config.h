@@ -28,5 +28,6 @@ constexpr unsigned long CUS_TIMEOUT_MS = 3000;
 constexpr unsigned long MODE_REQUEST_RESEND_MS = 500;
 constexpr int MIN_OPENING_PERCENT = 0;
 constexpr int MAX_OPENING_PERCENT = 100;
+constexpr int POT_REMOTE_OVERRIDE_THRESHOLD = 12;
 constexpr int MIN_SERVO_ANGLE = 0;
 constexpr int MAX_SERVO_ANGLE = 90;

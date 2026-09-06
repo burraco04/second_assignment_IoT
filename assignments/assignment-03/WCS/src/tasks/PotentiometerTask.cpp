@@ -7,6 +7,7 @@ PotentiometerTask::PotentiometerTask(WcsContext& context)
 
 void PotentiometerTask::init() {
     pinMode(POT_PIN, INPUT);
+    context.lastPotRawValue = analogRead(POT_PIN);
 }
 
 void PotentiometerTask::tick() {
@@ -18,6 +19,15 @@ void PotentiometerTask::tick() {
     state = PotentiometerState::Measuring;
 
     const int rawValue = analogRead(POT_PIN);
+    if (context.remoteManualOpening &&
+        context.lastPotRawValue >= 0 &&
+        abs(rawValue - context.lastPotRawValue) < POT_REMOTE_OVERRIDE_THRESHOLD) {
+        return;
+    }
+
+    context.remoteManualOpening = false;
+    context.lastPotRawValue = rawValue;
+
     const int nextOpening = map(rawValue, 0, 1023, MIN_OPENING_PERCENT, MAX_OPENING_PERCENT);
 
     if (nextOpening != context.manualOpening) {
@@ -25,4 +35,3 @@ void PotentiometerTask::tick() {
         context.manualOpeningChanged = true;
     }
 }
-

@@ -70,6 +70,9 @@ public final class CusContext {
     public synchronized void setManualOpening(final int opening, final boolean forwardToWcs) {
         final int bounded = clampPercentage(opening);
         if (manualOpening == bounded) {
+            if (mode == SystemMode.MANUAL && forwardToWcs) {
+                manualValveChanged = true;
+            }
             return;
         }
         manualOpening = bounded;
@@ -154,4 +157,3 @@ public final class CusContext {
     ) {
     }
 }
-

@@ -101,6 +101,8 @@ void SerialTask::handleModeCommand(const char* value) {
 
 void SerialTask::handleValveCommand(const char* value) {
     context.manualOpening = parseOpening(value);
+    context.remoteManualOpening = true;
+    context.lastPotRawValue = analogRead(POT_PIN);
 }
 
 void SerialTask::sendPendingModeRequest() {
