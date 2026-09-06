@@ -36,7 +36,7 @@ public record CusConfig(
         }
 
         return new CusConfig(
-            text(properties, "mqtt.broker", "tcp://localhost:1883"),
+            text(properties, "mqtt.broker", "tcp://broker.mqtt-dashboard.com:1883"),
             text(properties, "mqtt.clientId", "assignment03-cus"),
             text(properties, "mqtt.username", ""),
             text(properties, "mqtt.password", ""),
@@ -65,4 +65,3 @@ public record CusConfig(
         return Integer.parseInt(properties.getProperty(key, Integer.toString(defaultValue)).trim());
     }
 }
-

@@ -7,7 +7,8 @@
 constexpr char WIFI_SSID[] = "Gointernet_08E9B6";
 constexpr char WIFI_PASSWORD[] = "gointernet123";
 
-constexpr char MQTT_HOST[] = "192.168.15.72";
+// Public MQTT broker used for the prototype.
+constexpr char MQTT_HOST[] = "broker.mqtt-dashboard.com";
 constexpr uint16_t MQTT_PORT = 1883;
 constexpr char MQTT_USER[] = "";
 constexpr char MQTT_PASSWORD[] = "";
@@ -37,4 +38,3 @@ constexpr unsigned long MQTT_RECONNECT_INTERVAL_MS = 3000;
 constexpr float SONAR_FULL_CM = 5.0f;
 constexpr float SONAR_EMPTY_CM = 45.0f;
 constexpr unsigned long SONAR_TIMEOUT_US = 30000;
-

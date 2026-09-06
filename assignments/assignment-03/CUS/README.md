@@ -23,7 +23,7 @@ Configuration is in `config.properties`.
 
 ## Architecture
 
-- `MqttTask`: receives TMS telemetry via MQTT.
+- `MqttTask`: receives TMS telemetry via MQTT from `broker.mqtt-dashboard.com:1883`.
 - `CusControlTask`: manages `AUTOMATIC`, `MANUAL`, `UNCONNECTED`.
 - `ValveRegulationTask`: implements the automatic valve FSM: `CLOSED`, `SEMI-OPEN`, `OPEN`.
 - `SerialTask`: communicates with WCS only through the serial line.
@@ -81,4 +81,3 @@ Accepted payload examples:
 ```json
 {"opening":75}
 ```
-
